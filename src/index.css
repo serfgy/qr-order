@@ -1,5 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'MICROSOFTYAHEI', sans-serif;
+}
+
+@font-face {
+  font-family: 'MICROSOFTYAHEI';
+  src: local('MICROSOFTYAHEI'), url(./fonts/MICROSOFTYAHEI.ttf) format('truetype');
 }

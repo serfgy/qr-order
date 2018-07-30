@@ -7,6 +7,7 @@ import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 // components
 import Main from './Main';
+import Cart from './Cart';
 // CSS
 import './App.css';
 
@@ -36,10 +37,27 @@ class App extends Component {
       <Router>
         <div>
           <Route
-            path="/:tableId"
+            exact
+            path="/"
+            component={({ match }) => (
+              <Redirect to={"/table/1"} />
+            )} />
+          <Route
+            exact
+            path="/table/:tableId"
             component={
               ({ match }) => (
                 <Main
+                  match={match}
+                  serviceEntry={this.state.serviceEntry} />
+              )
+            } />
+          <Route
+            exact
+            path="/cart/:tableId"
+            component={
+              ({ match }) => (
+                <Cart
                   match={match}
                   serviceEntry={this.state.serviceEntry} />
               )
