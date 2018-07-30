@@ -8,7 +8,7 @@ import { withRouter } from 'react-router';
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 // Ant Design Mobile
-import { Result, WhiteSpace, WingBlank, Flex, Icon } from 'antd-mobile';
+import { WhiteSpace, WingBlank, Flex, Icon } from 'antd-mobile';
 // Components
 import MenuList from './MenuList';
 // Images
@@ -36,9 +36,7 @@ class Main extends Component {
       home: {
         tableId: cookies.get("tableId")
       },
-      appNodes: [],
-      loading: true,
-      collapsed: false
+      loading: true
     };
   }
 
@@ -48,15 +46,21 @@ class Main extends Component {
   render() {
     console.log('render main');
 
-    const myImg = src => <img src={src} className="spe am-icon am-icon-md" alt="" />;
+    const tableId = this.props.match.params.tableId;
 
     return (
       <div>
-        <Result
-          img={myImg('https://gw.alipayobjects.com/zos/rmsportal/pdFARIqkrKEGVVEwotFe.svg')}
-          title="支付成功"
-          message={<div>998.00元 <del>1098元</del></div>}
-        />
+        <div
+          style={{ color: "#ff7875", background: "white", borderBottomColor: "rgb(221, 221, 221)", borderBottomWidth: "1px", borderBottomStyle: "solid" }}>
+          <div
+            style={{ padding: "20px", fontSize: "20px", textAlign: "left" }}>
+            福星<span style={{ fontSize: "40px", color: "#fa541c" }}>欢迎</span>您
+          </div>
+          <div
+            style={{ padding: "20px", fontSize: "20px", textAlign: "right" }}>
+            您的桌号是<span style={{ fontSize: "30px", color: "#fa541c" }}>#</span><span style={{ fontSize: "40px", color: "#fa541c" }}>{tableId}</span>
+          </div>
+        </div>
 
         <WhiteSpace size="sm" />
 

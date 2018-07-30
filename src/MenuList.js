@@ -17,16 +17,43 @@ class MenuList extends Component {
     console.log('MenuList constructed');
 
     // binding
-    this.addItem = this.addItem.bind(this);
+    this.plusItem = this.plusItem.bind(this);
+    this.minusItem = this.minusItem.bind(this);
 
     // init
     this.state = {
       loading: true,
-      todos: []
+      menuItems: []
     };
   }
 
   componentDidMount() {
+    const menuItems = [
+      {
+        "name": "肉骨茶",
+        "amount": 0,
+        "price": 38,
+        "imgSrc": "http://salemdigest.com/wp-content/uploads/2016/08/TITS_food1.jpg",
+        "promo": "国庆节大甩卖"
+      },
+      {
+        "name": "满星大包",
+        "amount": 0,
+        "price": 18,
+        "imgSrc": "https://sethlui.com/wp-content/uploads/2013/10/best-singapore-food-1024-3-2-800x963.jpg",
+        "promo": "抢购"
+      },
+      {
+        "name": "咸菜肉丝",
+        "amount": 0,
+        "price": 28,
+        "imgSrc": "https://foodinloveid.files.wordpress.com/2016/07/img_3273.jpg?w=474",
+        "promo": "促销"
+      }
+    ];
+    this.setState({
+      menuItems: menuItems
+    });
   }
 
   render() {
@@ -49,10 +76,10 @@ class MenuList extends Component {
             {this.renderHotTab()}
           </div>
           <div style={{ backgroundColor: '#fff' }}>
-            Content of second tab
+
           </div>
           <div style={{ backgroundColor: '#fff' }}>
-            Content of third tab
+
           </div>
         </Tabs>
       </div>
@@ -61,77 +88,76 @@ class MenuList extends Component {
 
   renderHotTab() {
 
+    const menuItems = this.state.menuItems;
+
     return (
       <div>
-        <Flex
-          key="1"
-          style={{ margin: '0px', padding: '10px' }}>
-          <Flex.Item
-            style={{ flex: 1 }}>
-            <img height={64} width={64} alt="logo" src="http://salemdigest.com/wp-content/uploads/2016/08/TITS_food1.jpg" />
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 3, textAlign: 'right' }}>
-            <div>
-              <div
-                style={{ fontSize: '13px', color: 'black' }}>
-                猪头肉
-              </div>
-              <div
-                style={{ fontSize: '13px', color: 'red' }}>
-                38元/份
-              </div>
-              <div
-                style={{ fontSize: '13px', color: 'orange' }}>
-                会员价18元
-              </div>
-            </div>
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 1, textAlign: 'center' }}>
-            <AntdIcon style={{ marginTop: "5px" }} type={'plus'} color="#faad14" fontSize="20px" />
-          </Flex.Item>
-        </Flex>
-        <Flex
-          key="2"
-          style={{ margin: '0px', padding: '10px' }}>
-          <Flex.Item
-            style={{ flex: 1 }}>
-            <img height={64} width={64} alt="logo" src="https://sethlui.com/wp-content/uploads/2013/10/best-singapore-food-1024-3-2-800x963.jpg" />
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 3, textAlign: 'right' }}>
-            <div>
-              <div
-                style={{ fontSize: '13px', color: 'black' }}>
-                猪头肉
-              </div>
-              <div
-                style={{ fontSize: '13px', color: 'red' }}>
-                38元/份
-              </div>
-              <div
-                style={{ fontSize: '13px', color: 'orange' }}>
-                会员价18元
-              </div>
-            </div>
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 1, textAlign: 'center' }}>
-            <AntdIcon type={'up'} color="#faad14" fontSize="15px" />
-            <div style={{marginTop: "5px", marginBottom: "5px"}}>3 份</div>
-            <AntdIcon type={'down'} color="#faad14" fontSize="15px" />
-          </Flex.Item>
-        </Flex>
+        {
+          menuItems.map((menuItem, index) =>
+            <Flex
+              key={index}
+              style={{ margin: '0px', padding: '10px' }}>
+              <Flex.Item
+                style={{ flex: 1 }}>
+                <img height={64} width={64} alt="logo" src={menuItem.imgSrc} />
+              </Flex.Item>
+              <Flex.Item
+                style={{ flex: 3, textAlign: 'right' }}>
+                <div>
+                  <div
+                    style={{ fontSize: '13px', color: 'black' }}>
+                    {menuItem.name}
+                  </div>
+                  <div
+                    style={{ fontSize: '13px', color: 'red' }}>
+                    {menuItem.price}元/份
+                  </div>
+                  <div
+                    style={{ fontSize: '13px', color: 'orange' }}>
+                    {menuItem.promo}
+                  </div>
+                </div>
+              </Flex.Item>
+              {
+                menuItem.amount === 0
+                  ?
+                  <Flex.Item
+                    style={{ flex: 1, textAlign: 'center' }}>
+                    <AntdIcon style={{ marginTop: "5px" }} type={'plus'} color="#faad14" fontSize="20px" onClick={this.plusItem(index)}/>
+                  </Flex.Item>
+                  : 
+                  <Flex.Item
+                    style={{ flex: 1, textAlign: 'center' }}>
+                    <AntdIcon type={'up'} color="#faad14" fontSize="15px" onClick={this.plusItem(index)}/>
+                    <div style={{ marginTop: "5px", marginBottom: "5px" }}>{menuItem.amount}份</div>
+                    <AntdIcon type={'down'} color="#faad14" fontSize="15px" onClick={this.minusItem(index)} />
+                  </Flex.Item>
+              }
+            </Flex>
+          )
+        }
       </div>
     );
   }
 
-  addItem() {
+  plusItem(index) {
+    const menuItems = this.state.menuItems;
+    menuItems[index].amount += 1;
+
+    // update state
     this.setState({
-      modalVisible: true
+        menuItems,
     });
-    console.log("item clicked");
+  }
+
+  minusItem(index) {
+    const menuItems = this.state.menuItems;
+    menuItems[index].amount -= 1;
+
+    // update state
+    this.setState({
+        menuItems,
+    });
   }
 
 }
