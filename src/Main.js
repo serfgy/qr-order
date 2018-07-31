@@ -29,14 +29,19 @@ class Main extends Component {
 
     // binding
     this.setLocation = this.setLocation.bind(this);
+    this.handleCartChange = this.handleCartChange.bind(this);
+    this.handleCartClicked = this.handleCartClicked.bind(this);
 
     // init
     const { cookies } = this.props;
     this.state = {
       home: {
+        name: 'Guest',
         tableId: cookies.get("tableId")
       },
-      loading: true
+      dishTotal: cookies.get('dishTotal') || 0,
+      cartTotal: cookies.get('cartTotal') || 0,
+      cartItems: cookies.get('cartItems') || [],
     };
   }
 
@@ -47,6 +52,9 @@ class Main extends Component {
     console.log('render main');
 
     const tableId = this.props.match.params.tableId;
+    const dishTotal = this.state.dishTotal;
+    const cartTotal = this.state.cartTotal;
+    const cartItems = this.state.cartItems;
 
     return (
       <div>
@@ -68,20 +76,28 @@ class Main extends Component {
           <MenuList
             serviceEntry={this.props.serviceEntry}
             home={this.state.home}
+            onCartChange={this.handleCartChange}
+            cartItems={cartItems}
           />
         </WingBlank>
 
         <WhiteSpace size="sm" />
 
+        <div style={{ height: '80px' }}></div>
+
         <div style={{ background: "#ffd591", position: "fixed", bottom: "0px", left: "0px", width: "60%", height: "40px", textAlign: "center" }}>
-          <p>13道菜，共<span style={{ color: "red" }}>250元</span></p>
+          <p>{dishTotal}道菜，共<span style={{ color: "red" }}>{cartTotal}元</span></p>
         </div>
-        <Link to={'/cart/1'}>
+
+        <Link
+          onClick={this.handleCartClicked}
+          to={'/cart/1'}>
           <div style={{ background: "#fa541c", position: "fixed", bottom: "0px", right: "0px", width: "40%", height: "40px", textAlign: "center" }}>
             <AntdIcon style={{ marginTop: "3px" }} type={'audit'} color="white" fontSize="20px" />
             <div style={{ fontSize: "10px", color: "white", marginTop: "-2px" }}>查看点单</div>
           </div>
         </Link>
+
       </div>
     );
   }
@@ -93,6 +109,28 @@ class Main extends Component {
     this.setState({
       home: home
     });
+  }
+
+  handleCartChange(dishTotal, cartTotal, cartItems) {
+    this.setState(
+      {
+        dishTotal,
+        cartTotal,
+        cartItems
+      }, () => {
+        console.log("dishTotal", dishTotal);
+        console.log("cartTotal", cartTotal);
+        console.log("cartItems", cartItems);
+      }
+    );
+  }
+
+  handleCartClicked() {
+    const { cookies } = this.props;
+    cookies.set('dishTotal', this.state.dishTotal, { path: '/' });
+    cookies.set('cartTotal', this.state.cartTotal, { path: '/' });
+    cookies.set('cartItems', this.state.cartItems, { path: '/' });
+    console.log('fuckingcokkie',cookies.get('cartItems'))
   }
 
 }

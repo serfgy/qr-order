@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 // React Router
 import { Link } from "react-router-dom";
 // Ant Design
-import { Button, WhiteSpace, Tabs, Flex, Badge, Icon } from 'antd-mobile';
+import { Tabs, Flex, Badge, Icon } from 'antd-mobile';
 // Images
 import { Up, Down, Plus } from '@ant-design/icons/esm';
 import AntdIcon from '@ant-design/icons-react/esm';
@@ -17,20 +17,25 @@ class MenuList extends Component {
     console.log('MenuList constructed');
 
     // binding
+    this.addItem = this.addItem.bind(this);
     this.plusItem = this.plusItem.bind(this);
     this.minusItem = this.minusItem.bind(this);
 
     // init
     this.state = {
       loading: true,
-      menuItems: []
+      menuItems: [],
+      cartItems: this.props.cartItems,
     };
+
+    console.log('helo moto', this.state.cartItems);
   }
 
   componentDidMount() {
     const menuItems = [
       {
         "name": "肉骨茶",
+        "stkId": "0001",
         "amount": 0,
         "price": 38,
         "imgSrc": "http://salemdigest.com/wp-content/uploads/2016/08/TITS_food1.jpg",
@@ -38,6 +43,7 @@ class MenuList extends Component {
       },
       {
         "name": "满星大包",
+        "stkId": "0002",
         "amount": 0,
         "price": 18,
         "imgSrc": "https://sethlui.com/wp-content/uploads/2013/10/best-singapore-food-1024-3-2-800x963.jpg",
@@ -45,6 +51,7 @@ class MenuList extends Component {
       },
       {
         "name": "咸菜肉丝",
+        "stkId": "0003",
         "amount": 0,
         "price": 28,
         "imgSrc": "https://foodinloveid.files.wordpress.com/2016/07/img_3273.jpg?w=474",
@@ -89,6 +96,7 @@ class MenuList extends Component {
   renderHotTab() {
 
     const menuItems = this.state.menuItems;
+    const cartItems = this.state.cartItems;
 
     return (
       <div>
@@ -119,18 +127,18 @@ class MenuList extends Component {
                 </div>
               </Flex.Item>
               {
-                menuItem.amount === 0
+                !cartItems.find(cartItem => cartItem.stkId === menuItem.stkId)
                   ?
                   <Flex.Item
                     style={{ flex: 1, textAlign: 'center' }}>
-                    <AntdIcon style={{ marginTop: "5px" }} type={'plus'} color="#faad14" fontSize="20px" onClick={this.plusItem(index)}/>
+                    <AntdIcon style={{ marginTop: "5px" }} type={'plus'} color="#faad14" fontSize="20px" onClick={() => this.addItem(menuItem)} />
                   </Flex.Item>
-                  : 
+                  :
                   <Flex.Item
                     style={{ flex: 1, textAlign: 'center' }}>
-                    <AntdIcon type={'up'} color="#faad14" fontSize="15px" onClick={this.plusItem(index)}/>
-                    <div style={{ marginTop: "5px", marginBottom: "5px" }}>{menuItem.amount}份</div>
-                    <AntdIcon type={'down'} color="#faad14" fontSize="15px" onClick={this.minusItem(index)} />
+                    <AntdIcon type={'up'} color="#faad14" fontSize="15px" onClick={() => this.plusItem(menuItem)} />
+                    <div style={{ marginTop: "5px", marginBottom: "5px" }}>{cartItems.find(cartItem => cartItem.stkId === menuItem.stkId).amount}份</div>
+                    <AntdIcon type={'down'} color="#faad14" fontSize="15px" onClick={() => this.minusItem(menuItem)} />
                   </Flex.Item>
               }
             </Flex>
@@ -140,24 +148,54 @@ class MenuList extends Component {
     );
   }
 
-  plusItem(index) {
-    const menuItems = this.state.menuItems;
-    menuItems[index].amount += 1;
+  addItem(menuItem) {
+    let cartItems = this.state.cartItems;
+    const index = cartItems.findIndex(cartItem => cartItem.stkId === menuItem.stkId);
 
-    // update state
-    this.setState({
-        menuItems,
-    });
+    if (index < 0) {
+      menuItem.amount = 1;
+      cartItems.push(menuItem);
+    } else {
+      cartItems[index].amount++;
+    }
+
+    this.recalculate(cartItems);
   }
 
-  minusItem(index) {
-    const menuItems = this.state.menuItems;
-    menuItems[index].amount -= 1;
+  plusItem(menuItem) {
+    let cartItems = this.state.cartItems;
+    const index = cartItems.findIndex(cartItem => cartItem.stkId === menuItem.stkId);
+    cartItems[index].amount++;
 
+    this.recalculate(cartItems);
+  }
+
+  minusItem(menuItem) {
+    let cartItems = this.state.cartItems;
+    const index = cartItems.findIndex(cartItem => cartItem.stkId === menuItem.stkId);
+    cartItems[index].amount--;
+
+    if (cartItems[index].amount === 0) {
+      cartItems.splice(index, 1);
+    }
+
+    this.recalculate(cartItems);
+  }
+
+  recalculate(cartItems) {
     // update state
-    this.setState({
-        menuItems,
+    this.setState({ cartItems: cartItems }, () => {
+      console.log("recalculating cartItems", cartItems);
     });
+    let dishTotal = 0;
+    let cartTotal = 0;
+    // calculate 
+    for (let cartItem of cartItems) {
+      dishTotal += cartItem.amount
+      cartTotal += cartItem.amount * cartItem.price
+    }
+    // update parent state using props
+    this.props.onCartChange(dishTotal, cartTotal, cartItems);
   }
 
 }

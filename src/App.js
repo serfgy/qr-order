@@ -1,13 +1,15 @@
 // React
 import React, { Component } from 'react';
 // React Router
-import { HashRouter as Router, Route, Redirect } from "react-router-dom";
+import { HashRouter as Router, Route, Redirect } from 'react-router-dom';
 // react-cookie
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 // components
 import Main from './Main';
 import Cart from './Cart';
+import Error from './Error';
+import Success from './Success';
 // CSS
 import './App.css';
 
@@ -23,7 +25,10 @@ class App extends Component {
 
     // init
     this.state = {
-      serviceEntry: window.formAppConfig.serviceEntry
+      serviceEntry: window.formAppConfig.serviceEntry,
+      home: {
+        name: 'Guest'
+      },
     };
   }
 
@@ -58,6 +63,26 @@ class App extends Component {
             component={
               ({ match }) => (
                 <Cart
+                  match={match}
+                  serviceEntry={this.state.serviceEntry} />
+              )
+            } />
+          <Route
+            exact
+            path="/success"
+            component={
+              ({ match }) => (
+                <Success
+                  match={match}
+                  serviceEntry={this.state.serviceEntry} />
+              )
+            } />
+          <Route
+            exact
+            path="/error"
+            component={
+              ({ match }) => (
+                <Error
                   match={match}
                   serviceEntry={this.state.serviceEntry} />
               )

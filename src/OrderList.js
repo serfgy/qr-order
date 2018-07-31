@@ -17,11 +17,13 @@ class OrderList extends Component {
     console.log('OrderList constructed');
 
     // binding
+    this.plusItem = this.plusItem.bind(this);
+    this.minusItem = this.minusItem.bind(this);
 
     // init
     this.state = {
       loading: true,
-      todos: []
+      cartItems: this.props.cartItems,
     };
   }
 
@@ -29,103 +31,88 @@ class OrderList extends Component {
   }
 
   render() {
+
+    const cartItems = this.state.cartItems;
+
     return (
-      <div style={{ background: "white" }}>
-        <Flex
-          key="1"
-          style={{ margin: '0px', padding: '10px' }}>
-          <Flex.Item
-            style={{ flex: 1 }}>
-            <img height={64} width={64} alt="logo" src="http://salemdigest.com/wp-content/uploads/2016/08/TITS_food1.jpg" />
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 3, textAlign: 'right' }}>
-            <div>
-              <div
-                style={{ fontSize: '13px', color: 'black' }}>
-                猪头肉
-            </div>
-              <div
-                style={{ fontSize: '13px', color: 'red' }}>
-                38元/份
-            </div>
-              <div
-                style={{ fontSize: '13px', color: 'orange' }}>
-                活动日
-            </div>
-            </div>
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 1, textAlign: 'center' }}>
-            <AntdIcon style={{ marginTop: "5px" }} type={'plus'} color="#faad14" fontSize="20px" />
-          </Flex.Item>
-        </Flex>
-        <Flex
-          key="2"
-          style={{ margin: '0px', padding: '10px' }}>
-          <Flex.Item
-            style={{ flex: 1 }}>
-            <img height={64} width={64} alt="logo" src="https://sethlui.com/wp-content/uploads/2013/10/best-singapore-food-1024-3-2-800x963.jpg" />
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 3, textAlign: 'right' }}>
-            <div>
-              <div
-                style={{ fontSize: '13px', color: 'black' }}>
-                猪头肉
-            </div>
-              <div
-                style={{ fontSize: '13px', color: 'red' }}>
-                38元/份
-            </div>
-              <div
-                style={{ fontSize: '13px', color: 'orange' }}>
-                促销
-            </div>
-            </div>
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 1, textAlign: 'center' }}>
-            <AntdIcon type={'up'} color="#faad14" fontSize="15px" />
-            <div style={{ marginTop: "5px", marginBottom: "5px" }}>3 份</div>
-            <AntdIcon type={'down'} color="#faad14" fontSize="15px" />
-          </Flex.Item>
-        </Flex>
-        <Flex
-          key="3"
-          style={{ margin: '0px', padding: '10px' }}>
-          <Flex.Item
-            style={{ flex: 1 }}>
-            <img height={64} width={64} alt="logo" src="https://foodinloveid.files.wordpress.com/2016/07/img_3273.jpg?w=474" />
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 3, textAlign: 'right' }}>
-            <div>
-              <div
-                style={{ fontSize: '13px', color: 'black' }}>
-                猪头肉
-            </div>
-              <div
-                style={{ fontSize: '13px', color: 'red' }}>
-                38元/份
-            </div>
-              <div
-                style={{ fontSize: '13px', color: 'orange' }}>
-                促销
-            </div>
-            </div>
-          </Flex.Item>
-          <Flex.Item
-            style={{ flex: 1, textAlign: 'center' }}>
-            <AntdIcon type={'up'} color="#faad14" fontSize="15px" />
-            <div style={{ marginTop: "5px", marginBottom: "5px" }}>3 份</div>
-            <AntdIcon type={'down'} color="#faad14" fontSize="15px" />
-          </Flex.Item>
-        </Flex>
+      <div style={{ background: 'white' }}>
+        {
+          cartItems.map((cartItem, index) =>
+            <Flex
+              key={index}
+              style={{ margin: '0px', padding: '10px' }}>
+              <Flex.Item
+                style={{ flex: 1 }}>
+                <img height={64} width={64} alt="logo" src={cartItem.imgSrc} />
+              </Flex.Item>
+              <Flex.Item
+                style={{ flex: 3, textAlign: 'right' }}>
+                <div>
+                  <div
+                    style={{ fontSize: '13px', color: 'black' }}>
+                    {cartItem.name}
+                  </div>
+                  <div
+                    style={{ fontSize: '13px', color: 'red' }}>
+                    {cartItem.price}元/份
+                  </div>
+                  <div
+                    style={{ fontSize: '13px', color: 'orange' }}>
+                    {cartItem.promo}
+                  </div>
+                </div>
+              </Flex.Item>
+
+              <Flex.Item
+                style={{ flex: 1, textAlign: 'center' }}>
+                <AntdIcon type={'up'} color="#faad14" fontSize="15px" onClick={() => this.plusItem(cartItem)} />
+                <div style={{ marginTop: "5px", marginBottom: "5px" }}>{cartItem.amount}份</div>
+                <AntdIcon type={'down'} color="#faad14" fontSize="15px" onClick={() => this.minusItem(cartItem)} />
+              </Flex.Item>
+
+            </Flex>
+          )
+        }
       </div>
     );
   }
 
+  plusItem(cartItem) {
+    let cartItems = this.state.cartItems;
+    const index = cartItems.findIndex(item => item.stkId === cartItem.stkId);
+    cartItems[index].amount++;
+
+    this.recalculate(cartItems);
+  }
+
+  minusItem(cartItem) {
+    let cartItems = this.state.cartItems;
+    const index = cartItems.findIndex(item => item.stkId === cartItem.stkId);
+
+    if (cartItems[index].amount === 0) {
+      // early return
+      return;
+    }
+
+    cartItems[index].amount--;
+    this.recalculate(cartItems);
+  }
+
+  recalculate(cartItems) {
+    // update state
+    this.setState({ cartItems: cartItems }, () => {
+      console.log("recalculating cartItems", cartItems);
+    });
+    let dishTotal = 0;
+    let cartTotal = 0;
+    // calculate 
+    for (let cartItem of cartItems) {
+      dishTotal += cartItem.amount
+      cartTotal += cartItem.amount * cartItem.price
+    }
+    // update parent state using props
+    this.props.onCartChange(dishTotal, cartTotal, cartItems);
+  }
 }
 
 export default OrderList;
