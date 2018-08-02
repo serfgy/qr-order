@@ -1,12 +1,13 @@
 // React
 import React, { Component } from 'react';
 // React Router
-import { HashRouter as Router, Route, Redirect } from 'react-router-dom';
-// react-cookie
+import { HashRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+// React Cookie
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 // components
 import Main from './Main';
+import Reception from './Reception';
 import Cart from './Cart';
 import Error from './Error';
 import Success from './Success';
@@ -36,20 +37,29 @@ class App extends Component {
     console.log('render app');
 
     const { cookies } = this.props;
-    const userRecKey = cookies.get("userRecKey");
 
     return (
       <Router>
-        <div>
+        <Switch>
           <Route
             exact
             path="/"
             component={({ match }) => (
-              <Redirect to={"/table/1"} />
+              <Redirect to={"/reception/322"} />
             )} />
           <Route
             exact
-            path="/table/:tableId"
+            path="/reception/:tableId?"
+            component={
+              ({ match }) => (
+                <Reception
+                  match={match}
+                  serviceEntry={this.state.serviceEntry} />
+              )
+            } />
+          <Route
+            exact
+            path="/main/:tableId?"
             component={
               ({ match }) => (
                 <Main
@@ -59,7 +69,7 @@ class App extends Component {
             } />
           <Route
             exact
-            path="/cart/:tableId"
+            path="/cart/:tableId?"
             component={
               ({ match }) => (
                 <Cart
@@ -78,8 +88,6 @@ class App extends Component {
               )
             } />
           <Route
-            exact
-            path="/error"
             component={
               ({ match }) => (
                 <Error
@@ -87,7 +95,7 @@ class App extends Component {
                   serviceEntry={this.state.serviceEntry} />
               )
             } />
-        </div>
+        </Switch>
       </Router>
     );
   }

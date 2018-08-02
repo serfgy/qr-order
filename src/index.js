@@ -1,7 +1,7 @@
 // React
 import React from 'react';
 import ReactDOM from 'react-dom';
-// react-cookie
+// React Cookie
 import { CookiesProvider } from 'react-cookie';
 // Component
 import App from './App';

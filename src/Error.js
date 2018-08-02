@@ -1,10 +1,9 @@
-import { version } from '../package.json';
 // React
 import React, { Component } from 'react';
 // React Router
 import { Route, Link, Redirect } from "react-router-dom";
 import { withRouter } from 'react-router';
-// react-cookie
+// React Cookie
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 // Ant Design Mobile
@@ -26,15 +25,12 @@ class Error extends Component {
     console.log('success constructed');
 
     // binding
-    this.setLocation = this.setLocation.bind(this);
 
     // init
     const { cookies } = this.props;
     this.state = {
-      home: {
-        name: 'Guest',
-        tableId: cookies.get("tableId")
-      },
+      name: cookies.get('name') || '',
+      tableId: cookies.get('tableId') || '',
       dishTotal: cookies.get('dishTotal') || 0,
       cartTotal: cookies.get('cartTotal') || 0,
       cartItems: cookies.get('cartItems') || [],
@@ -47,21 +43,18 @@ class Error extends Component {
   render() {
     console.log('render success');
 
-    return (
-      <div>
+    const pageStyle = {
+      height: '100vh',
+      width: '100vw',
+      background: '#69c0ff'
+    };
 
+    return (
+      <div
+        style={pageStyle}>
 
       </div>
     );
-  }
-
-  setLocation(home) {
-    const { cookies } = this.props;
-    cookies.set("tableId", home.tableId);
-
-    this.setState({
-      home: home
-    });
   }
 
 }

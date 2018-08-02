@@ -1,14 +1,13 @@
-import { version } from '../package.json';
 // React
 import React, { Component } from 'react';
 // React Router
-import { Route, Link, Redirect } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
-// react-cookie
+// React Cookie
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 // Ant Design Mobile
-import { WhiteSpace, WingBlank, Flex, Icon } from 'antd-mobile';
+import { WhiteSpace, WingBlank } from 'antd-mobile';
 // Components
 import OrderList from './OrderList';
 // Images
@@ -28,7 +27,6 @@ class Cart extends Component {
     console.log('main constructed');
 
     // binding
-    this.setLocation = this.setLocation.bind(this);
     this.handleCartChange = this.handleCartChange.bind(this);
     this.handleMainClicked = this.handleMainClicked.bind(this);
     this.handleCheckoutClicked = this.handleCheckoutClicked.bind(this);
@@ -36,14 +34,13 @@ class Cart extends Component {
     // init
     const { cookies } = this.props;
     this.state = {
-      home: {
-        name: 'Guest',
-        tableId: cookies.get("tableId")
-      },
+      name: cookies.get('name') || '',
+      tableId: cookies.get('tableId') || '',
       dishTotal: cookies.get('dishTotal') || 0,
       cartTotal: cookies.get('cartTotal') || 0,
       cartItems: cookies.get('cartItems') || [],
     };
+    console.log('cart received name and table', this.state.name, this.state.tableId);
   }
 
   componentDidMount() {
@@ -52,7 +49,7 @@ class Cart extends Component {
   render() {
     console.log('render cart');
 
-    const tableId = this.props.match.params.tableId;
+    const tableId = this.state.tableId;
     const dishTotal = this.state.dishTotal;
     const cartTotal = this.state.cartTotal;
     const cartItems = this.state.cartItems;
@@ -76,7 +73,6 @@ class Cart extends Component {
         <WingBlank size="md">
           <OrderList
             serviceEntry={this.props.serviceEntry}
-            home={this.state.home}
             onCartChange={this.handleCartChange}
             cartItems={cartItems}
           />
@@ -88,7 +84,7 @@ class Cart extends Component {
 
         <Link
           onClick={this.handleCheckoutClicked}
-          to={'/table/1'}>
+          to={'/reception/321'}>
           <div style={{ background: "#73d13d", position: "fixed", bottom: "40px", width: "100%", height: "40px", textAlign: "center" }}>
             <AntdIcon style={{ marginTop: "3px" }} type={'file-done'} color="white" fontSize="20px" />
             <div style={{ fontSize: "10px", color: "white", marginTop: "-2px" }}>成交点单</div>
@@ -101,7 +97,7 @@ class Cart extends Component {
 
         <Link
           onClick={this.handleMainClicked}
-          to={'/table/1'}>
+          to={'/main/' + tableId}>
           <div style={{ background: "#ffc069", position: "fixed", bottom: "0px", right: "0px", width: "40%", height: "40px", textAlign: "center" }}>
             <AntdIcon style={{ marginTop: "3px" }} type={'shopping'} color="white" fontSize="20px" />
             <div style={{ fontSize: "10px", color: "white", marginTop: "-2px" }}>继续点菜</div>
@@ -110,15 +106,6 @@ class Cart extends Component {
 
       </div>
     );
-  }
-
-  setLocation(home) {
-    const { cookies } = this.props;
-    cookies.set("tableId", home.tableId);
-
-    this.setState({
-      home: home
-    });
   }
 
   handleCartChange(dishTotal, cartTotal, cartItems) {
@@ -144,6 +131,8 @@ class Cart extends Component {
 
   handleCheckoutClicked() {
     const { cookies } = this.props;
+    cookies.remove('name');
+    cookies.remove('tableId');
     cookies.remove('dishTotal');
     cookies.remove('cartTotal');
     cookies.remove('cartItems');

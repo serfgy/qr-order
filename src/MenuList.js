@@ -28,7 +28,6 @@ class MenuList extends Component {
       cartItems: this.props.cartItems,
     };
 
-    console.log('helo moto', this.state.cartItems);
   }
 
   componentDidMount() {
