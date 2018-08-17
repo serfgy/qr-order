@@ -11,6 +11,7 @@ import { withCookies, Cookies } from 'react-cookie';
 import { Carousel, WhiteSpace, WingBlank, Flex, Icon } from 'antd-mobile';
 // Components
 import MenuList from './MenuList';
+import MenuList2 from './MenuList2';
 // Images
 import { Audit } from '@ant-design/icons/esm';
 import AntdIcon from '@ant-design/icons-react/esm';
@@ -39,85 +40,79 @@ class Main extends Component {
       dishTotal: cookies.get('dishTotal') || 0,
       cartTotal: cookies.get('cartTotal') || 0,
       cartItems: cookies.get('cartItems') || [],
-      data: ['1', '2', '3'],
-      imgHeight: 176,
+      carousel: ['carousel1.jpg', 'carousel1.jpg', 'carousel1.jpg', 'carousel1.jpg', 'carousel1.jpg'],
+      carouselHeight: 200,
     };
     console.log('main received name and table', this.state.name, this.state.tableId);
   }
 
   componentDidMount() {
+    // fetch data for carousel
     // simulate img loading
     setTimeout(() => {
       this.setState({
-        data: ['AiyWuByWklrrUDlFignR', 'TekJlZRVCjLFexlOCuWn', 'IJOtIlfsYdTyaDTRVrLI'],
+        carousel: ['carousel1.jpg', 'carousel2.jpg', 'carousel3.jpg', 'carousel4.jpg', 'carousel5.jpg'],
       });
     }, 100);
   }
 
   render() {
     console.log('render main');
+    const headerStyle = {
+      height: '30px',
+      padding: '3px',
+      marginRight: '5px',
+      fontSize: '12px',
+      color: '#bfbfbf',
+      textAlign: 'right'
+    };
 
-    const name = this.state.name;
-    const tableId = this.state.tableId;
-    const dishTotal = this.state.dishTotal;
-    const cartTotal = this.state.cartTotal;
-    const cartItems = this.state.cartItems;
+    const { name, tableId,
+      dishTotal, cartTotal, cartItems,
+      carousel, carouselHeight } = this.state;
 
     return (
       <div>
         <div
-          style={{ color: "#ff7875", background: "white", borderBottomColor: "rgb(221, 221, 221)", borderBottomWidth: "1px", borderBottomStyle: "solid" }}>
-          <div
-            style={{ padding: "20px", fontSize: "20px", textAlign: "left" }}>
-            福星<span style={{ fontSize: "40px", color: "#fa541c" }}>欢迎</span>您
+          style={headerStyle}>
+          <div style={{ color: '#8c8c8c' }}>
+            {name}
           </div>
-          <div
-            style={{ padding: "20px", fontSize: "20px", textAlign: "right" }}>
-            <span style={{ fontSize: "30px", color: "#fa541c" }}>{name}</span>，您的桌号是<span style={{ fontSize: "30px", color: "#fa541c" }}>#</span><span style={{ fontSize: "40px", color: "#fa541c" }}>{tableId}</span>
+          <div>
+            {tableId} 号桌
           </div>
         </div>
 
-        <WhiteSpace size="sm" />
-
-        <WingBlank>
-          <Carousel
-            style={{ padding: '16px', background: '#DEF1E5', overflow: 'hidden' }}
-            frameOverflow="visible"
-            cellSpacing={10}
-            slideWidth={0.8}
-            autoplay
-            infinite
-            beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
-            afterChange={index => this.setState({ slideIndex: index })}
-          >
-            {this.state.data.map((val, index) => (
-              <a
-                key={val}
-                href="http://www.alipay.com"
-                style={{
-                  display: 'block',
-                  position: 'relative',
-                  top: this.state.slideIndex === index ? -10 : 0,
-                  height: this.state.imgHeight,
-                  boxShadow: '2px 1px 1px rgba(0, 0, 0, 0.2)',
+        <Carousel
+          autoplay
+          autoplayInterval={2000}
+          infinite
+          beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
+          afterChange={index => console.log('slide to', index)}
+        >
+          {carousel.map(val => (
+            <a
+              key={val}
+              href="http://www.alipay.com"
+              style={{ display: 'inline-block', width: '100%', height: carouselHeight }}
+            >
+              <img
+                src={require('./img/' + val)}
+                alt=""
+                style={{ width: '100%', verticalAlign: 'top' }}
+                onLoad={() => {
+                  // fire window resize event to change height
+                  window.dispatchEvent(new Event('resize'));
+                  this.setState({ carouselHeight: 'auto' });
                 }}
-              >
-                <img
-                  src={`https://zos.alipayobjects.com/rmsportal/${val}.png`}
-                  alt=""
-                  style={{ width: '100%', verticalAlign: 'top' }}
-                  onLoad={() => {
-                    // fire window resize event to change height
-                    window.dispatchEvent(new Event('resize'));
-                    this.setState({ imgHeight: 'auto' });
-                  }}
-                />
-              </a>
-            ))}
-          </Carousel>
-        </WingBlank>
+              />
+            </a>
+          ))}
+        </Carousel>
 
-        <WingBlank size="md">
+        <WingBlank
+          style={{ marginTop: '8px' }}
+          size="md">
           <MenuList
             serviceEntry={this.props.serviceEntry}
             onCartChange={this.handleCartChange}
@@ -127,9 +122,19 @@ class Main extends Component {
 
         <WhiteSpace size="sm" />
 
+        <WingBlank
+          style={{ marginTop: '8px' }}
+          size="md">
+          <MenuList2
+            serviceEntry={this.props.serviceEntry}
+            onCartChange={this.handleCartChange}
+            cartItems={cartItems}
+          />
+        </WingBlank>
+
         <div style={{ height: '80px' }}></div>
 
-        <div style={{ background: "#ffd591", position: "fixed", bottom: "0px", left: "0px", width: "60%", height: "40px", textAlign: "center" }}>
+        <div style={{ zIndex: 1, background: "#ffd591", position: "fixed", bottom: "0px", left: "0px", width: "60%", height: "40px", textAlign: "center" }}>
           <p>{dishTotal}道菜，共<span style={{ color: "red" }}>{cartTotal}元</span></p>
         </div>
 

@@ -42,7 +42,7 @@ class Reception extends Component {
       cartItems: cookies.get('cartItems') || [],
       animateInput: false,
     };
-    console.log('table is',this.state.tableId);
+    console.log('table is', this.state.tableId);
   }
 
   componentDidMount() {
@@ -50,7 +50,7 @@ class Reception extends Component {
 
   render() {
     console.log('render reception');
-    console.log('table is',this.state.tableId);
+    console.log('table is', this.state.tableId);
     const pageStyle = {
       height: '100vh',
       width: '100vw',
@@ -172,7 +172,6 @@ class Reception extends Component {
       console.log("from reception to main");
       cookies.set('name', this.state.name);
       cookies.set('tableId', this.state.tableId);
-      console.log('table is',this.state.tableId);
       this.props.history.push('/main/' + this.state.tableId);
     }
   }
